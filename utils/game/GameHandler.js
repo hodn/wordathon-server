@@ -11,12 +11,19 @@ class GameHandler {
     registerPlayer(socketID, playerName) {
         let player = new Player(socketID, playerName);
         this.players[socketID] = player;
-        console.log(this.players);
     }
 
     removePlayer(socketID) {
         delete this.players[socketID];
-        console.log(this.players);
+    }
+
+    createRoom(socketID) {
+        let room = new Room(socketID);
+        room.players.push(socketID);
+        this.players[socketID].roomID = room.ID;
+        this.rooms[room.ID] = room;
+        
+        return room.ID;
     }
 
 }

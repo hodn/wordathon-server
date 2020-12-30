@@ -1,7 +1,6 @@
 class Room {
-    constructor(playerID, name) {
+    constructor(playerID) {
         this.ID = playerID + Date.now();
-        this.name = name;
         this.players = [];
         this.round = 0;
         this.settings = {};

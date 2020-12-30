@@ -26,6 +26,11 @@ io.on('connection', (socket) => {
   socket.on("registerPlayer", (playerName) => {
     gh.registerPlayer(socket.id, playerName);
   })
+
+  socket.on("createRoom", () => {
+    const roomID = gh.createRoom(socket.id);
+    socket.join(roomID);
+  })
   // player creates a game (room)
 
   // player joins a game (room)
