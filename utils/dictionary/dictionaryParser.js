@@ -1,64 +1,36 @@
-const csv = require('csv-parser');
-const fs = require('fs');
-const path = require('path');
+const axios = require("axios").default;
+require('dotenv').config();
 
-const getNounWithDefinition = (entry) => {
+module.exports.evaluatePlayerEntry = async (word) => {
 
-  let record = null;
-  const entrySplit = entry[0].split(" ");
-  let word = entrySplit[0]; // Word in dictionary
-  const type = entrySplit[1]; // noun, adjective, etc.
+  try {
+    let options = {
+      method: 'GET',
+      url: 'https://wordsapiv1.p.rapidapi.com/words/' + word,
+      headers: {
+        'x-rapidapi-key': process.env.WORD_API_KEY,
+        'x-rapidapi-host': process.env.WORD_API_HOST,
+      }
+    };
 
-  if (word && type) {
-    
-    // if noun
-    if (type.includes("n.")) {
-      
-      entrySplit.splice(0, 2)
-      let definition = entrySplit.join(" ")
-      if (word.includes('"')) word = word.substring(1) // Given by the format of the data
-      if (definition.includes('"')) definition = definition.slice(0, -2)
-      
-      record = { word, definition }
-    }
-  }
+    const response = await axios.request(options);
+    const definitions = [];
 
-  return record;
-}
-
-module.exports.loadDictionary = () => {
-  const dictionaryPath = path.join(__dirname, "..", "..", "dictionary");
-  const loadedDictionary = {};
-  
-  fs.readdir(dictionaryPath, (err, files) => {
-    files.forEach(file => {
-      const stream = fs.createReadStream(path.join(dictionaryPath, file));
-      const characterSet = path.parse(file).name;
-      loadedDictionary[characterSet] = [];
-
-      stream
-        .pipe(csv({ headers: false, newline: "\n\n" }))
-        .on('data', (data) => {
-          const noun = getNounWithDefinition(data)
-          if (noun) loadedDictionary[characterSet].push(noun)
-        })
+    // Find the definition for nouns
+    response.data["results"].forEach(result => {
+      if (result["partOfSpeech"] === "noun") {
+        definitions.push(result.definition);
+      }
     });
-  });
-
-  return loadedDictionary;
-}
-
-module.exports.validateEntry = (dictionary, entry) => {
-  const characterSet = entry[0].toUpperCase();
-  const availableNouns = dictionary[characterSet];
-  let definitions = [];
-
-  for (let index = 0; index < availableNouns.length; index++) {
-    if (entry === availableNouns[index].word){
-      definitions.push(availableNouns[index].definition);
-    }
+    
+    console.log(definitions);
+    return definitions;
+    
+  } catch (err) {
+    console.error(err);
   }
-
-  return definitions;
 }
+
+
+
 

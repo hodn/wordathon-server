@@ -10,19 +10,10 @@ const io = require("socket.io")(httpServer, {
 const port = 5000;
 const dictionaryParser = require("./utils/dictionary/dictionaryParser");
 
-const dictionary = dictionaryParser.loadDictionary();
-
 app.get('/', (req, res) => {
   const entry = req.query.entry;
-  let definitions = dictionaryParser.validateEntry(dictionary, entry)
-  let string = "";
-
-  definitions.forEach(def => {
-      string += def;
-      string += "<br>";
-  });
-
-  res.send(string);
+  dictionaryParser.evaluatePlayerEntry(entry);
+  res.send();
 })
 
 httpServer.listen(port, () => {
@@ -31,7 +22,7 @@ httpServer.listen(port, () => {
 
 // New player (socket, device) has connected to the game
 io.on('connection', (socket) => {
-
+  
   // player creates a game (room)
 
   // player joins a game (room)
