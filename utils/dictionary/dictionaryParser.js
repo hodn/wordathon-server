@@ -1,7 +1,9 @@
 const axios = require("axios").default;
 require('dotenv').config();
 
-module.exports.evaluatePlayerEntry = async (word) => {
+// Looks up the word in the dictionary
+// Returns definitions if the word is a noun (or other requirement)
+const lookupInDictionary = async (word) => {
 
   try {
     let options = {
@@ -25,9 +27,10 @@ module.exports.evaluatePlayerEntry = async (word) => {
     
     console.log(definitions);
     return definitions;
-    
+
   } catch (err) {
     console.error(err);
+    return null;
   }
 }
 

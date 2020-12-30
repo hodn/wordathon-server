@@ -8,11 +8,9 @@ const io = require("socket.io")(httpServer, {
   }
 });
 const port = 5000;
-const dictionaryParser = require("./utils/dictionary/dictionaryParser");
 
 app.get('/', (req, res) => {
   const entry = req.query.entry;
-  dictionaryParser.evaluatePlayerEntry(entry);
   res.send();
 })
 
