@@ -8,6 +8,8 @@ const io = require("socket.io")(httpServer, {
   }
 });
 const port = 5000;
+const GameHandler = require("./utils/game/GameHandler");
+const gh = new GameHandler();
 
 app.get('/', (req, res) => {
   const entry = req.query.entry;
@@ -21,6 +23,9 @@ httpServer.listen(port, () => {
 // New player (socket, device) has connected to the game
 io.on('connection', (socket) => {
   
+  socket.on("registerPlayer", (playerName) => {
+    gh.registerPlayer(socket.id, playerName);
+  })
   // player creates a game (room)
 
   // player joins a game (room)
@@ -29,7 +34,7 @@ io.on('connection', (socket) => {
 
   // player has left the game
   socket.on('disconnect', () => {
-    console.log('player disconnected');
+    gh.removePlayer(socket.id);
   });
 });
 
