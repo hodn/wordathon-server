@@ -14,16 +14,24 @@ class GameHandler {
     }
 
     removePlayer(socketID) {
-        delete this.players[socketID];
+        const inRoom = this.players[socketID].roomID;
+        delete this.rooms[inRoom].players[socketID]; // Remove from the room
+
+        delete this.players[socketID]; // Remove from players
     }
 
     createRoom(socketID) {
         let room = new Room(socketID);
-        room.players.push(socketID);
-        this.players[socketID].roomID = room.ID;
         this.rooms[room.ID] = room;
+
+        this.addPlayerToRoom(socketID, room.ID);
         
         return room.ID;
+    }
+
+    addPlayerToRoom(socketID, roomID) {
+        this.rooms[roomID].players[socketID] = this.players[socketID];
+        this.players[socketID].roomID = roomID;
     }
 
 }
