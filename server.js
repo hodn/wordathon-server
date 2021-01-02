@@ -23,27 +23,37 @@ httpServer.listen(port, () => {
 // New player (socket, device) has connected to the game
 io.on('connection', (socket) => {
   
+  // Player joins the game server
   socket.on("registerPlayer", (playerName) => {
     gh.registerPlayer(socket.id, playerName);
   })
 
+  // Player creates and joins a room
   socket.on("createRoom", () => {
     const roomID = gh.createRoom(socket.id);
     gh.addPlayerToRoom(socket.id, roomID);
     socket.join(roomID);
   })
 
+  // Player joins room
   socket.on("joinRoom", (roomID) => {
     gh.addPlayerToRoom(socket.id, roomID);
     socket.join(roomID);
   })
-  // player creates a game (room)
 
-  // player joins a game (room)
+  // Player (owner) starts the game
+  // EMITS Room instances on start/end round, end game
+  socket.on("startGame", (roomID) => {
+    const emitRoundStart = (payload) => io.to(roomID).emit("startRound", payload);
+    const emitRoundEnd = (payload) => io.to(roomID).emit("endRound", payload);
+    const emitEndGame = (payload) => io.to(roomID).emit("endGame", payload);
+    
+    gh.startRound(roomID, emitRoundStart, emitRoundEnd, emitEndGame);
 
-  // player sends a word - verify, add points
+  })
 
-  // player has left the game
+  // player has left the game server
+  // automatically removed from socket io room
   socket.on('disconnect', () => {
     gh.removePlayer(socket.id);
   });

@@ -3,9 +3,10 @@ const Room = require("./Room");
 const dictionaryParser = require("../dictionary/dictionaryParser");
 
 class GameHandler {
-    constructor() {
+    constructor(io) {
         this.rooms =  {};
         this.players = {};
+        this.socket = io;
     }
 
     registerPlayer(socketID, playerName) {
@@ -32,6 +33,26 @@ class GameHandler {
     addPlayerToRoom(socketID, roomID) {
         this.rooms[roomID].players[socketID] = this.players[socketID];
         this.players[socketID].roomID = roomID;
+    }
+
+    startRound(roomID, emitRoundStart, emitRoundEnd, emitEndGame) {
+        const room = this.rooms[roomID];
+        
+        room.startRound();
+        emitRoundStart(room);
+        setTimeout(this.endRound, room.roundEndTime - Date.now(), roomID, emitRoundStart, emitRoundEnd, emitEndGame);
+    }
+
+    endRound(roomID, emitRoundStart, emitRoundEnd, emitEndGame) {
+        const room = this.rooms[roomID];
+
+        if (room.rounds <= room.round) {
+            emitRoundEnd(room);
+            setTimeout(this.startRound, 6000, roomID, emitRoundStart, emitRoundEnd, emitEndGame);
+        } else {
+            emitEndGame(room);
+            delete this.rooms[room.ID];
+        }
     }
 
 }
