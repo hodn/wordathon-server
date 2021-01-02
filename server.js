@@ -41,9 +41,11 @@ io.on('connection', (socket) => {
     socket.join(roomID);
   })
 
-  // Player (owner) starts the game
+  // The game (room) is started by the player who had created it 
   // EMITS Room instances on start/end round, end game
-  socket.on("startGame", (roomID) => {
+  socket.on("startGame", () => {
+
+    const roomID = gh.players[socket.id].roomID;
     const emitRoundStart = (payload) => io.to(roomID).emit("startRound", payload);
     const emitRoundEnd = (payload) => io.to(roomID).emit("endRound", payload);
     const emitEndGame = (payload) => io.to(roomID).emit("endGame", payload);
