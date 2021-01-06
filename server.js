@@ -39,6 +39,7 @@ io.on('connection', (socket) => {
   socket.on("joinRoom", (roomID) => {
     gh.addPlayerToRoom(socket.id, roomID);
     socket.join(roomID);
+    // Update view (JOIN SCREEN)
   })
 
   // The game (room) is started by the player who had created it 
@@ -46,11 +47,22 @@ io.on('connection', (socket) => {
   socket.on("startGame", () => {
 
     const roomID = gh.players[socket.id].roomID;
-    const emitRoundStart = (payload) => io.to(roomID).emit("startRound", payload);
-    const emitRoundEnd = (payload) => io.to(roomID).emit("endRound", payload);
-    const emitEndGame = (payload) => io.to(roomID).emit("endGame", payload);
+    const emitRoundStart = (room) => io.to(roomID).emit("startRound", room);
+    const emitRoundEnd = (room) => io.to(roomID).emit("endRound", room);
+    const emitEndGame = (room) => io.to(roomID).emit("endGame", room);
     
     gh.startRound(roomID, emitRoundStart, emitRoundEnd, emitEndGame);
+
+  })
+
+  socket.on("evaluateWordEntry", (word) => {
+
+    const playerID = socket.id;
+    const roomID = gh.players[playerID].roomID;
+    const sendEvaluation = (result) => io.to(socket.id).emit("evaluationReply", result);
+    const updateScoreBoard = (room) => io.to(roomID).emit("updateScoreboard", room);
+    
+    gh.evaluateWordEntry(playerID, roomID, word, sendEvaluation, updateScoreBoard);
 
   })
 

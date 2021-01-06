@@ -3,7 +3,7 @@ require('dotenv').config();
 
 // Looks up the word in the dictionary
 // Returns definitions if the word is a noun (or other requirement)
-const lookupInDictionary = async (word) => {
+module.exports.getDefinitions = async (word) => {
 
   try {
     let options = {

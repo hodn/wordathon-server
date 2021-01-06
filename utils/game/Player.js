@@ -4,7 +4,6 @@ class Player {
         this.name = name;
         this.roomID = null;
         this.points = 0;
-        this.words = {};
     }
 
 

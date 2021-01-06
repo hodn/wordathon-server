@@ -9,6 +9,7 @@ class Room {
         this.round = 0;
         this.roundEndTime = null;
         this.roundLetters = [];
+        this.roundWordPool = {}; 
     }
 
     startRound() {
