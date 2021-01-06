@@ -19,20 +19,16 @@ class Room {
     }
 
     generateLetters() {
-        const consonants = "bcdfghjklmnpqrstvwxyz";
-        const vowels = "aeiou";
-        const letters = [];
+        // Scrabble letter distribution
+        const letters = "aaaaaaaaabbccddddeeeeeeeeeeeffggghhiiiiiiiiijkllllmmnnnnnnooooooooppqrrrrrrssssttttttuuuuvvwwxyyz";
+        const roundLetters = [];
         
-        // TODO: Improve the distribution
-        for (let index = 0; index < 11; index++) {
-            if (index < 7) {
-                letters.push(consonants[Math.floor(Math.random() * consonants.length)]);
-            } else {
-                letters.push(vowels[Math.floor(Math.random() * vowels.length)]);
-            }
+        for (let index = 0; index < 12; index++) {
+            roundLetters.push(letters[Math.floor(Math.random() * letters.length)]);
         }
 
-        this.roundLetters = letters;
+        console.log(roundLetters);
+        this.roundLetters = roundLetters;
     }
 
 

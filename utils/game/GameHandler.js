@@ -52,7 +52,7 @@ class GameHandler {
             emitRoundEnd(room);
             setTimeout(() => {
                 this.startRound(roomID, emitRoundStart, emitRoundEnd, emitEndGame);
-              }, 5000)
+              }, 5000) // pause between rounds
         } else {
             emitEndGame(room);
             delete this.rooms[room.ID];
