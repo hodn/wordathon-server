@@ -21,7 +21,7 @@ class GameHandler {
         const roomID = this.players[playerID].roomID;
         const designatedRoom = this.rooms[roomID];
         
-        delete designatedRoom.players[playerID]; // Remove Player KEY from the room
+        delete designatedRoom.players[playerID]; // Remove Player KEY from the room players
         delete this.players[playerID]; // Remove Player KEY from  players
         
         // If there are players - return new room state, otherwise delete room
@@ -64,12 +64,13 @@ class GameHandler {
     endRound(playerID, emitRoundStart, emitRoundEnd, emitEndGame) {
         const roomID = this.players[playerID].roomID;
         const room = this.rooms[roomID];
+        room.roundNextStart = Date.now() + room.settings.delayBetweenRounds * 1000;
 
         if (room.settings.numberOfRounds > room.round) {
             emitRoundEnd(room);
             setTimeout(() => {
                 this.startRound(playerID, emitRoundStart, emitRoundEnd, emitEndGame);
-            }, 5000) // pause between rounds
+            }, room.settings.delayBetweenRounds) // pause between rounds
         } else {
             emitEndGame(room);
             delete this.rooms[room.ID];
