@@ -33,16 +33,16 @@ io.on('connection', (socket) => {
   // Player creates and joins a room
   socket.on("createRoom", () => {
     const roomID = gh.createRoom(playerID);
-    const room = gh.addPlayerToRoom(playerID, roomID);
+    const initializedRoom = gh.addPlayerToRoom(playerID, roomID);
     socket.join(roomID);
-    io.to(room.ID).emit("initRoom", room);
+    io.to(initializedRoom.ID).emit("initRoom", initializedRoom);
   })
 
   // Player joins room
   socket.on("joinRoom", (roomID) => {
-    const room = gh.addPlayerToRoom(playerID, roomID);
-    socket.join(roomID);
-    io.to(room.ID).emit("updateRoom", room);
+    const joinedRoom = gh.addPlayerToRoom(playerID, roomID);
+    socket.join(joinedRoom.ID);
+    io.to(joinedRoom.ID).emit("updateRoom", joinedRoom);
   })
 
   // The game (room) is started by the player who had created it 
@@ -64,11 +64,16 @@ io.on('connection', (socket) => {
 
   })
 
-  // player has left the game server
-  // automatically removed from socket io room
+ // Player leaves the site
   socket.on('disconnect', () => {
-    const room = gh.removePlayer(playerID);
-    io.to(room.ID).emit("updateRoom", room);
+    
+    // If the player is registered, remove him from the game list
+    if (gh.isPlayerRegistered(playerID)) {
+      const room = gh.removePlayer(playerID);
+      if (room) io.to(room.ID).emit("updateRoom", room); // if there are still players in the room, update it
+    }
+
+    
   });
 });
 

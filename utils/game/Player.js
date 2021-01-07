@@ -6,7 +6,9 @@ class Player {
         this.points = 0;
     }
 
-
+    addPoints(points) {
+        this.points += 20;
+    }
 }
 
 module.exports = Player;

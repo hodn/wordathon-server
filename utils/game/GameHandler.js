@@ -13,12 +13,24 @@ class GameHandler {
         this.players[playerID] = player;
     }
 
+    isPlayerRegistered(playerID) {
+        return playerID in this.players;
+    }
+
     removePlayer(playerID) {
         const roomID = this.players[playerID].roomID;
-        delete this.rooms[roomID].players[playerID]; // Remove from the room
-        delete this.players[playerID]; // Remove from players
-
-        return this.rooms[roomID];
+        const designatedRoom = this.rooms[roomID];
+        
+        delete designatedRoom.players[playerID]; // Remove Player KEY from the room
+        delete this.players[playerID]; // Remove Player KEY from  players
+        
+        // If there are players - return new room state, otherwise delete room
+        if (Object.keys(designatedRoom.players).length > 0) {
+            return designatedRoom;
+        } else {
+            delete this.rooms[roomID]; 
+            return null;
+        }
     }
 
     createRoom(playerID) {
@@ -33,7 +45,7 @@ class GameHandler {
     addPlayerToRoom(playerID, roomID) {
         this.rooms[roomID].players[playerID] = this.players[playerID];
         this.players[playerID].roomID = roomID;
-
+       
         return this.rooms[roomID];
     }
 
@@ -73,12 +85,12 @@ class GameHandler {
 
             // Word is actually a noun
             if (definitions) {
-                player.points += 20; // For the noun
+                player.addPoints(20); // For the noun
 
                 // Noun first time in the round
                 if (!(word in room.roundWordPool)) {
                     room.roundWordPool[word] = [player.ID];
-                    player.points += 20; // Extra points for first occurence
+                    player.addPoints(20); // Extra points for first occurence
                     sendEvaluation(2);
                 } else {
                     // Noun already used
