@@ -8,30 +8,29 @@ class GameHandler {
         this.players = {};
     }
 
-    registerPlayer(socketID, playerName) {
-        let player = new Player(socketID, playerName);
-        this.players[socketID] = player;
+    registerPlayer(playerID, playerName) {
+        let player = new Player(playerID, playerName);
+        this.players[playerID] = player;
     }
 
-    removePlayer(socketID) {
-        const inRoom = this.players[socketID].roomID;
-        delete this.rooms[inRoom].players[socketID]; // Remove from the room
-
-        delete this.players[socketID]; // Remove from players
+    removePlayer(playerID) {
+        const roomID = this.players[playerID].roomID;
+        delete this.rooms[roomID].players[playerID]; // Remove from the room
+        delete this.players[playerID]; // Remove from players
     }
 
-    createRoom(socketID) {
-        let room = new Room(socketID);
+    createRoom(playerID) {
+        let room = new Room(playerID);
         this.rooms[room.ID] = room;
 
-        this.addPlayerToRoom(socketID, room.ID);
+        this.addPlayerToRoom(playerID, room.ID);
 
         return room.ID;
     }
 
-    addPlayerToRoom(socketID, roomID) {
-        this.rooms[roomID].players[socketID] = this.players[socketID];
-        this.players[socketID].roomID = roomID;
+    addPlayerToRoom(playerID, roomID) {
+        this.rooms[roomID].players[playerID] = this.players[playerID];
+        this.players[playerID].roomID = roomID;
     }
 
     startRound(roomID, emitRoundStart, emitRoundEnd, emitEndGame) {
@@ -59,7 +58,7 @@ class GameHandler {
         }
     }
 
-    async evaluateWordEntry(playerID, roomID, word, sendEvaluation, updateScoreBoard) {
+    async evaluateWordEntry(playerID, roomID, word, sendEvaluation) {
 
         try {
             const definitions = await DictionaryParser.getDefinitions(word);
@@ -81,7 +80,7 @@ class GameHandler {
                     sendEvaluation(1); // A noun, but not first
                 }
 
-                updateScoreBoard(room);
+                // UPDATE ROOM
 
             } else {
                 // Word is not a noun

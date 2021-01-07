@@ -23,21 +23,23 @@ httpServer.listen(port, () => {
 // New player (socket, device) has connected to the game
 io.on('connection', (socket) => {
   
+  const playerID = socket.id;
+
   // Player joins the game server
   socket.on("registerPlayer", (playerName) => {
-    gh.registerPlayer(socket.id, playerName);
+    gh.registerPlayer(playerID, playerName);
   })
 
   // Player creates and joins a room
   socket.on("createRoom", () => {
-    const roomID = gh.createRoom(socket.id);
-    gh.addPlayerToRoom(socket.id, roomID);
+    const roomID = gh.createRoom(playerID);
+    gh.addPlayerToRoom(playerID, roomID);
     socket.join(roomID);
   })
 
   // Player joins room
   socket.on("joinRoom", (roomID) => {
-    gh.addPlayerToRoom(socket.id, roomID);
+    gh.addPlayerToRoom(playerID, roomID);
     socket.join(roomID);
     // Update view (JOIN SCREEN)
   })
@@ -46,7 +48,7 @@ io.on('connection', (socket) => {
   // EMITS Room instances on start/end round, end game
   socket.on("startGame", () => {
 
-    const roomID = gh.players[socket.id].roomID;
+    const roomID = gh.players[playerID].roomID;
     const emitRoundStart = (room) => io.to(roomID).emit("startRound", room);
     const emitRoundEnd = (room) => io.to(roomID).emit("endRound", room);
     const emitEndGame = (room) => io.to(roomID).emit("endGame", room);
@@ -57,9 +59,8 @@ io.on('connection', (socket) => {
 
   socket.on("evaluateWordEntry", (word) => {
 
-    const playerID = socket.id;
     const roomID = gh.players[playerID].roomID;
-    const sendEvaluation = (result) => io.to(socket.id).emit("evaluationReply", result);
+    const sendEvaluation = (result) => io.to(playerID).emit("evaluationReply", result);
     const updateScoreBoard = (room) => io.to(roomID).emit("updateScoreboard", room);
     
     gh.evaluateWordEntry(playerID, roomID, word, sendEvaluation, updateScoreBoard);
@@ -69,7 +70,7 @@ io.on('connection', (socket) => {
   // player has left the game server
   // automatically removed from socket io room
   socket.on('disconnect', () => {
-    gh.removePlayer(socket.id);
+    gh.removePlayer(playerID);
   });
 });
 
