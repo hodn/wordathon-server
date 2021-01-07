@@ -33,44 +33,42 @@ io.on('connection', (socket) => {
   // Player creates and joins a room
   socket.on("createRoom", () => {
     const roomID = gh.createRoom(playerID);
-    gh.addPlayerToRoom(playerID, roomID);
+    const room = gh.addPlayerToRoom(playerID, roomID);
     socket.join(roomID);
+    io.to(room.ID).emit("initRoom", room);
   })
 
   // Player joins room
   socket.on("joinRoom", (roomID) => {
-    gh.addPlayerToRoom(playerID, roomID);
+    const room = gh.addPlayerToRoom(playerID, roomID);
     socket.join(roomID);
-    // Update view (JOIN SCREEN)
+    io.to(room.ID).emit("updateRoom", room);
   })
 
   // The game (room) is started by the player who had created it 
   // EMITS Room instances on start/end round, end game
   socket.on("startGame", () => {
+    const emitRoundStart = (room) => io.to(room.ID).emit("startRound", room);
+    const emitRoundEnd = (room) => io.to(room.ID).emit("endRound", room);
+    const emitEndGame = (room) => io.to(room.ID).emit("endGame", room);
 
-    const roomID = gh.players[playerID].roomID;
-    const emitRoundStart = (room) => io.to(roomID).emit("startRound", room);
-    const emitRoundEnd = (room) => io.to(roomID).emit("endRound", room);
-    const emitEndGame = (room) => io.to(roomID).emit("endGame", room);
-    
-    gh.startRound(roomID, emitRoundStart, emitRoundEnd, emitEndGame);
+    gh.startRound(playerID, emitRoundStart, emitRoundEnd, emitEndGame);
 
   })
 
   socket.on("evaluateWordEntry", (word) => {
-
-    const roomID = gh.players[playerID].roomID;
     const sendEvaluation = (result) => io.to(playerID).emit("evaluationReply", result);
-    const updateScoreBoard = (room) => io.to(roomID).emit("updateScoreboard", room);
+    const updateRoom = (room) => io.to(room.ID).emit("updateRoom", room);
     
-    gh.evaluateWordEntry(playerID, roomID, word, sendEvaluation, updateScoreBoard);
+    gh.evaluateWordEntry(playerID, word, sendEvaluation, updateRoom);
 
   })
 
   // player has left the game server
   // automatically removed from socket io room
   socket.on('disconnect', () => {
-    gh.removePlayer(playerID);
+    const room = gh.removePlayer(playerID);
+    io.to(room.ID).emit("updateRoom", room);
   });
 });
 

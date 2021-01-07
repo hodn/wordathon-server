@@ -25,7 +25,6 @@ module.exports.getDefinitions = async (word) => {
       }
     });
     
-    console.log(definitions);
     return definitions;
 
   } catch (err) {

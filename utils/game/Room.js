@@ -28,7 +28,6 @@ class Room {
             roundLetters.push(letters[Math.floor(Math.random() * letters.length)]);
         }
 
-        console.log(roundLetters);
         this.roundLetters = roundLetters;
     }
 

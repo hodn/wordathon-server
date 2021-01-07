@@ -17,6 +17,8 @@ class GameHandler {
         const roomID = this.players[playerID].roomID;
         delete this.rooms[roomID].players[playerID]; // Remove from the room
         delete this.players[playerID]; // Remove from players
+
+        return this.rooms[roomID];
     }
 
     createRoom(playerID) {
@@ -31,26 +33,30 @@ class GameHandler {
     addPlayerToRoom(playerID, roomID) {
         this.rooms[roomID].players[playerID] = this.players[playerID];
         this.players[playerID].roomID = roomID;
+
+        return this.rooms[roomID];
     }
 
-    startRound(roomID, emitRoundStart, emitRoundEnd, emitEndGame) {
+    startRound(playerID, emitRoundStart, emitRoundEnd, emitEndGame) {
+        const roomID = this.players[playerID].roomID;
         const room = this.rooms[roomID];
 
         room.startRound();
         emitRoundStart(room);
-
+        
         setTimeout(() => {
-            this.endRound(roomID, emitRoundStart, emitRoundEnd, emitEndGame);
+            this.endRound(playerID, emitRoundStart, emitRoundEnd, emitEndGame);
         }, room.roundEndTime - Date.now())
     }
 
-    endRound(roomID, emitRoundStart, emitRoundEnd, emitEndGame) {
+    endRound(playerID, emitRoundStart, emitRoundEnd, emitEndGame) {
+        const roomID = this.players[playerID].roomID;
         const room = this.rooms[roomID];
 
         if (room.settings.numberOfRounds > room.round) {
             emitRoundEnd(room);
             setTimeout(() => {
-                this.startRound(roomID, emitRoundStart, emitRoundEnd, emitEndGame);
+                this.startRound(playerID, emitRoundStart, emitRoundEnd, emitEndGame);
             }, 5000) // pause between rounds
         } else {
             emitEndGame(room);
@@ -58,12 +64,12 @@ class GameHandler {
         }
     }
 
-    async evaluateWordEntry(playerID, roomID, word, sendEvaluation) {
+    async evaluateWordEntry(playerID, word, sendEvaluation, updateRoom) {
 
         try {
             const definitions = await DictionaryParser.getDefinitions(word);
-            const room = this.rooms[roomID];
             const player = this.players[playerID];
+            const room = this.rooms[player.roomID];
 
             // Word is actually a noun
             if (definitions) {
@@ -80,7 +86,7 @@ class GameHandler {
                     sendEvaluation(1); // A noun, but not first
                 }
 
-                // UPDATE ROOM
+                updateRoom(room);
 
             } else {
                 // Word is not a noun
