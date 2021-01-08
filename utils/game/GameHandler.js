@@ -49,6 +49,11 @@ class GameHandler {
         return this.rooms[roomID];
     }
 
+    getRoomState(playerID) {
+        const roomID = this.players[playerID].roomID;
+        return this.rooms[roomID];
+    }
+
     startRound(playerID, emitRoundStart, emitRoundEnd, emitEndGame) {
         const roomID = this.players[playerID].roomID;
         const room = this.rooms[roomID];
@@ -64,7 +69,7 @@ class GameHandler {
     endRound(playerID, emitRoundStart, emitRoundEnd, emitEndGame) {
         const roomID = this.players[playerID].roomID;
         const room = this.rooms[roomID];
-        room.roundNextStart = Date.now() + room.settings.delayBetweenRounds * 1000;
+        room.setRoundNextStart(Date.now() + room.settings.delayBetweenRounds * 1000);
 
         if (room.settings.numberOfRounds > room.round) {
             emitRoundEnd(room);

@@ -33,6 +33,10 @@ class Room {
         this.roundLetters = roundLetters;
     }
 
+    setRoundNextStart(time) {
+        this.roundNextStart = time;
+    }
+
 
 
 }

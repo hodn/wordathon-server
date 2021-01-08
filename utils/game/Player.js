@@ -7,7 +7,7 @@ class Player {
     }
 
     addPoints(points) {
-        this.points += 20;
+        this.points += points;
     }
 }
 

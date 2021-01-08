@@ -34,7 +34,7 @@ io.on('connection', (socket) => {
   socket.on("createRoom", () => {
     const roomID = gh.createRoom(playerID);
     const initializedRoom = gh.addPlayerToRoom(playerID, roomID);
-    socket.join(roomID);
+    socket.join(initializedRoom.ID);
     io.to(initializedRoom.ID).emit("initRoom", initializedRoom);
   })
 
@@ -42,7 +42,13 @@ io.on('connection', (socket) => {
   socket.on("joinRoom", (roomID) => {
     const joinedRoom = gh.addPlayerToRoom(playerID, roomID);
     socket.join(joinedRoom.ID);
-    io.to(joinedRoom.ID).emit("updateRoom", joinedRoom);
+    io.to(joinedRoom.ID).emit("updateRoom", joinedRoom); // alerts the whole room
+  })
+
+  // Gets the latest room state
+  socket.on("getRoomState", (playerID) => {
+    const room = gh.getRoomState(playerID);
+    io.to(playerID).emit("updateRoom", room); // only to player that requested - getter
   })
 
   // The game (room) is started by the player who had created it 
