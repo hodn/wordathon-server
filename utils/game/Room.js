@@ -1,6 +1,7 @@
 class Room {
     constructor(playerID) {
         this.ID = playerID + Date.now();
+        this.ownerID = playerID;
         this.players = {};
         this.settings = {
             numberOfRounds: 3,
