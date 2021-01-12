@@ -11,11 +11,6 @@ const port = 5000;
 const GameHandler = require("./utils/game/GameHandler");
 const gh = new GameHandler();
 
-app.get('/', (req, res) => {
-  const entry = req.query.entry;
-  res.send();
-})
-
 httpServer.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
 })
@@ -35,7 +30,7 @@ io.on('connection', (socket) => {
     const roomID = gh.createRoom(playerID);
     const initializedRoom = gh.addPlayerToRoom(playerID, roomID);
     socket.join(initializedRoom.ID);
-    io.to(initializedRoom.ID).emit("initRoom", initializedRoom);
+    io.to(initializedRoom.ID).emit("updateRoom", initializedRoom);
   })
 
   // Player joins room
@@ -54,12 +49,8 @@ io.on('connection', (socket) => {
   // The game (room) is started by the player who had created it 
   // EMITS Room instances on start/end round, end game
   socket.on("startGame", () => {
-    const emitRoundStart = (room) => io.to(room.ID).emit("startRound", room);
-    const emitRoundEnd = (room) => io.to(room.ID).emit("endRound", room);
-    const emitEndGame = (room) => io.to(room.ID).emit("endGame", room);
-
-    gh.startRound(playerID, emitRoundStart, emitRoundEnd, emitEndGame);
-
+    const updateRoom = (room) => io.to(room.ID).emit("updateRoom", room);
+    gh.startRound(playerID, updateRoom);
   })
 
   socket.on("evaluateWordEntry", (word) => {

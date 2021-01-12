@@ -54,31 +54,34 @@ class GameHandler {
         return this.rooms[roomID];
     }
 
-    startRound(playerID, emitRoundStart, emitRoundEnd, emitEndGame) {
+    startRound(playerID, updateRoom) {
         const roomID = this.players[playerID].roomID;
         const room = this.rooms[roomID];
 
         room.startRound();
-        emitRoundStart(room);
+        updateRoom(room);
         
         setTimeout(() => {
-            this.endRound(playerID, emitRoundStart, emitRoundEnd, emitEndGame);
+            this.endRound(playerID, updateRoom);
         }, room.roundEndTime - Date.now())
     }
 
-    endRound(playerID, emitRoundStart, emitRoundEnd, emitEndGame) {
+    endRound(playerID, updateRoom) {
         const roomID = this.players[playerID].roomID;
         const room = this.rooms[roomID];
-        room.setRoundNextStart(Date.now() + room.settings.delayBetweenRounds * 1000);
+        
+        room.endRound();
+        updateRoom(room);
 
         if (room.settings.numberOfRounds > room.round) {
-            emitRoundEnd(room);
+            room.endRound();
+            
             setTimeout(() => {
-                this.startRound(playerID, emitRoundStart, emitRoundEnd, emitEndGame);
+                this.startRound(playerID, updateRoom);
             }, room.settings.delayBetweenRounds) // pause between rounds
+            
         } else {
-            emitEndGame(room);
-            delete this.rooms[room.ID];
+            updateRoom(room);
         }
     }
 
