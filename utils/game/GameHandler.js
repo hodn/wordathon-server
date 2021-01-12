@@ -78,8 +78,8 @@ class GameHandler {
             
             setTimeout(() => {
                 this.startRound(playerID, updateRoom);
-            }, room.settings.delayBetweenRounds) // pause between rounds
-            
+            }, room.roundNextStart - Date.now()) // pause between rounds
+
         } else {
             updateRoom(room);
         }
