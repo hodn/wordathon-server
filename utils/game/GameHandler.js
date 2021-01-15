@@ -20,15 +20,15 @@ class GameHandler {
     removePlayer(playerID) {
         const roomID = this.players[playerID].roomID;
         const designatedRoom = this.rooms[roomID];
-        
+
         delete designatedRoom.players[playerID]; // Remove Player KEY from the room players
         delete this.players[playerID]; // Remove Player KEY from  players
-        
+
         // If there are players - return new room state, otherwise delete room
         if (Object.keys(designatedRoom.players).length > 0) {
             return designatedRoom;
         } else {
-            delete this.rooms[roomID]; 
+            delete this.rooms[roomID];
             return null;
         }
     }
@@ -42,10 +42,19 @@ class GameHandler {
         return room.ID;
     }
 
+    editRoomSettings(playerID, settings) {
+        let roomID = this.players[playerID].roomID;
+        let room = this.rooms[roomID];
+        
+        if (room.ownerID === playerID) room.settings = settings;
+        
+        return this.rooms[roomID];
+    }
+
     addPlayerToRoom(playerID, roomID) {
         this.rooms[roomID].players[playerID] = this.players[playerID];
         this.players[playerID].roomID = roomID;
-       
+
         return this.rooms[roomID];
     }
 
@@ -58,24 +67,27 @@ class GameHandler {
         const roomID = this.players[playerID].roomID;
         const room = this.rooms[roomID];
 
-        room.startRound();
-        updateRoom(room);
-        
-        setTimeout(() => {
-            this.endRound(playerID, updateRoom);
-        }, room.roundEndTime - Date.now())
+        if (room.ownerID === playerID) {
+            
+            room.startRound();
+            updateRoom(room);
+
+            setTimeout(() => {
+                this.endRound(playerID, updateRoom);
+            }, room.roundEndTime - Date.now())
+        }
     }
 
     endRound(playerID, updateRoom) {
         const roomID = this.players[playerID].roomID;
         const room = this.rooms[roomID];
-        
+
         room.endRound();
         updateRoom(room);
 
         if (room.settings.numberOfRounds > room.round) {
             room.endRound();
-            
+
             setTimeout(() => {
                 this.startRound(playerID, updateRoom);
             }, room.roundNextStart - Date.now()) // pause between rounds

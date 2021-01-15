@@ -5,6 +5,7 @@ class Room {
         this.players = {};
         this.settings = {
             numberOfRounds: 3,
+            numberOfLetters: 12,
             roundDuration: 5,
             delayBetweenRounds: 5
         };
@@ -33,7 +34,7 @@ class Room {
         const letters = "aaaaaaaaabbccddddeeeeeeeeeeeffggghhiiiiiiiiijkllllmmnnnnnnooooooooppqrrrrrrssssttttttuuuuvvwwxyyz";
         const roundLetters = [];
         
-        for (let index = 0; index < 12; index++) {
+        for (let index = 0; index < numberOfLetters; index++) {
             roundLetters.push(letters[Math.floor(Math.random() * letters.length)]);
         }
 
