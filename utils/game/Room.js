@@ -9,8 +9,8 @@ class Room {
             numberOfRounds: 3,
             numberOfLetters: 12,
             roundDuration: 5,
-            delayBetweenRounds: 5
         };
+        this.delayBetweenRounds = 10;
         this.round = 0;
         this.inRound = false;
         this.roundEndTime = null;
@@ -27,7 +27,7 @@ class Room {
     }
 
     endRound() {
-        this.roundNextStart = Date.now() + this.settings.delayBetweenRounds * 1000;
+        this.roundNextStart = Date.now() + this.delayBetweenRounds * 1000;
         this.inRound = false; 
     }
 

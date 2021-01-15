@@ -54,8 +54,9 @@ io.on('connection', (socket) => {
 
   // The game (room) is started by the player who had created it 
   // EMITS Room instances on start/end round, end game
-  socket.on("startGame", () => {
+  socket.on("startGame", (settings) => {
     const updateRoom = (room) => io.to(room.ID).emit("updateRoom", room);
+    gh.editRoomSettings(playerID, settings);
     gh.startRound(playerID, updateRoom);
   })
 

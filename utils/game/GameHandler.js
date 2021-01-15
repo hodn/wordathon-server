@@ -47,7 +47,7 @@ class GameHandler {
         let room = this.rooms[roomID];
         
         if (room.ownerID === playerID) room.settings = settings;
-        
+
         return this.rooms[roomID];
     }
 
