@@ -18,8 +18,7 @@ class GameHandler {
     }
 
     removePlayer(playerID) {
-        const roomID = this.players[playerID].roomID;
-        const designatedRoom = this.rooms[roomID];
+        const designatedRoom = this.getRoomState(playerID);
 
         delete designatedRoom.players[playerID]; // Remove Player KEY from the room players
         delete this.players[playerID]; // Remove Player KEY from  players
@@ -28,7 +27,7 @@ class GameHandler {
         if (Object.keys(designatedRoom.players).length > 0) {
             return designatedRoom;
         } else {
-            delete this.rooms[roomID];
+            delete this.rooms[designatedRoom.ID];
             return null;
         }
     }
@@ -43,12 +42,11 @@ class GameHandler {
     }
 
     editRoomSettings(playerID, settings) {
-        let roomID = this.players[playerID].roomID;
-        let room = this.rooms[roomID];
+        let room = this.getRoomState(playerID);
         
         if (room.ownerID === playerID) room.settings = settings;
 
-        return this.rooms[roomID];
+        return room;
     }
 
     addPlayerToRoom(playerID, roomID) {
@@ -64,8 +62,7 @@ class GameHandler {
     }
 
     startRound(playerID, updateRoom) {
-        const roomID = this.players[playerID].roomID;
-        const room = this.rooms[roomID];
+        const room = this.getRoomState(playerID);
 
         if (room.ownerID === playerID) {
             
@@ -79,8 +76,7 @@ class GameHandler {
     }
 
     endRound(playerID, updateRoom) {
-        const roomID = this.players[playerID].roomID;
-        const room = this.rooms[roomID];
+        const room = this.getRoomState(playerID);
 
         room.endRound();
         updateRoom(room);
