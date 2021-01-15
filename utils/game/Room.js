@@ -36,7 +36,7 @@ class Room {
         const letters = "aaaaaaaaabbccddddeeeeeeeeeeeffggghhiiiiiiiiijkllllmmnnnnnnooooooooppqrrrrrrssssttttttuuuuvvwwxyyz";
         const roundLetters = [];
         
-        for (let index = 0; index < numberOfLetters; index++) {
+        for (let index = 0; index < this.settings.numberOfLetters; index++) {
             roundLetters.push(letters[Math.floor(Math.random() * letters.length)]);
         }
 
