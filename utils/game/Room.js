@@ -1,6 +1,8 @@
+const { nanoid } = require("nanoid");
+
 class Room {
     constructor(playerID) {
-        this.ID = playerID + Date.now();
+        this.ID = nanoid(5);
         this.ownerID = playerID;
         this.players = {};
         this.settings = {
