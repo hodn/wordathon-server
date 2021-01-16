@@ -95,6 +95,11 @@ class GameHandler {
 
     async evaluateWordEntry(playerID, word, sendEvaluation, updateRoom) {
 
+        const reply = {
+            definitions: null,
+            result: 0,
+        }
+
         try {
             const definitions = await DictionaryParser.getDefinitions(word);
             const player = this.players[playerID];
@@ -103,28 +108,27 @@ class GameHandler {
             // Word is actually a noun
             if (definitions) {
                 player.addPoints(20); // For the noun
+                reply.definition = definitions;
 
                 // Noun first time in the round
                 if (!(word in room.roundWordPool)) {
                     room.roundWordPool[word] = [player.ID];
                     player.addPoints(20); // Extra points for first occurence
-                    sendEvaluation(2);
+                    reply.result = 2;
+                    
+                    
                 } else {
                     // Noun already used
                     room.roundWordPool[word].push(player.ID);
-                    sendEvaluation(1); // A noun, but not first
+                    reply.result = 1; // A noun, but not first
                 }
-
-                updateRoom(room);
-
-            } else {
-                // Word is not a noun
-                sendEvaluation(0);
-
             }
 
+            sendEvaluation(reply);
+            updateRoom(room);
+
         } catch (error) {
-            sendEvaluation(0);
+            sendEvaluation(reply);
         }
 
 

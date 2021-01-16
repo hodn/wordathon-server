@@ -23,6 +23,7 @@ class Room {
         this.round += 1;
         this.roundEndTime = Date.now() + this.settings.roundDuration * 1000;
         this.inRound = true;
+        this.roundWordPool = {};
         this.generateLetters();
     }
 
