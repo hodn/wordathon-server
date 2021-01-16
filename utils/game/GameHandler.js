@@ -23,13 +23,7 @@ class GameHandler {
         delete designatedRoom.players[playerID]; // Remove Player KEY from the room players
         delete this.players[playerID]; // Remove Player KEY from  players
 
-        // If there are players - return new room state, otherwise delete room
-        if (Object.keys(designatedRoom.players).length > 0) {
-            return designatedRoom;
-        } else {
-            delete this.rooms[designatedRoom.ID];
-            return null;
-        }
+        return designatedRoom;
     }
 
     createRoom(playerID) {
@@ -43,7 +37,7 @@ class GameHandler {
 
     editRoomSettings(playerID, settings) {
         let room = this.getRoomState(playerID);
-        
+
         if (room.ownerID === playerID) room.settings = settings;
 
         return room;
@@ -65,27 +59,32 @@ class GameHandler {
         const room = this.getRoomState(playerID);
 
         if (room.ownerID === playerID) {
-            
+
             room.startRound();
             updateRoom(room);
 
             setTimeout(() => {
-                this.endRound(playerID, updateRoom);
+                this.endRound(room, updateRoom);
             }, room.roundEndTime - Date.now())
         }
     }
 
-    endRound(playerID, updateRoom) {
-        const room = this.getRoomState(playerID);
+    endRound(room, updateRoom) {
 
         room.endRound();
         updateRoom(room);
+
+        // empty room - all players left
+        if (Object.keys(room.players).length === 0) {
+            delete this.rooms[room.ID]
+            return; 
+        }
 
         if (room.settings.numberOfRounds > room.round) {
             room.endRound();
 
             setTimeout(() => {
-                this.startRound(playerID, updateRoom);
+                this.startRound(room.ownerID, updateRoom);
             }, room.roundNextStart - Date.now()) // pause between rounds
 
         } else {
@@ -115,8 +114,8 @@ class GameHandler {
                     room.roundWordPool[word] = [player.ID];
                     player.addPoints(20); // Extra points for first occurence
                     reply.result = 2;
-                    
-                    
+
+
                 } else {
                     // Noun already used
                     room.roundWordPool[word].push(player.ID);
