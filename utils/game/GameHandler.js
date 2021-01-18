@@ -95,6 +95,7 @@ class GameHandler {
     async evaluateWordEntry(playerID, word, sendEvaluation, updateRoom) {
 
         const reply = {
+            word,
             definitions: null,
             result: 0,
         }
