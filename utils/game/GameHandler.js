@@ -107,7 +107,7 @@ class GameHandler {
             // Word is actually a noun
             if (definitions) {
                 player.addPoints(20); // For the noun
-                reply.definition = definitions;
+                reply.definitions = definitions;
 
                 // Noun first time in the round
                 if (!(word in room.roundWordPool)) {
