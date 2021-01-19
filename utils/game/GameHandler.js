@@ -80,16 +80,14 @@ class GameHandler {
             return; 
         }
 
+        // if rounds left, start again in set seconds
         if (room.settings.numberOfRounds > room.round) {
-            room.endRound();
 
             setTimeout(() => {
                 this.startRound(room.ownerID, updateRoom);
             }, room.roundNextStart - Date.now()) // pause between rounds
 
-        } else {
-            updateRoom(room);
-        }
+        } 
     }
 
     async evaluateWordEntry(playerID, word, sendEvaluation, updateRoom) {
