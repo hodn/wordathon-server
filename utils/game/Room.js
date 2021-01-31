@@ -13,6 +13,7 @@ class Room {
         this.delayBetweenRounds = 10;
         this.round = 0;
         this.inRound = false;
+        this.wordPool = [];
         this.roundEndTime = null;
         this.roundNextStart = null;
         this.roundLetters = [];
@@ -29,6 +30,7 @@ class Room {
 
     endRound() {
         this.roundNextStart = Date.now() + this.delayBetweenRounds * 1000;
+        this.wordPool.push(this.roundWordPool);
         this.inRound = false; 
     }
 

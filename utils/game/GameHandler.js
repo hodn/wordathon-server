@@ -110,14 +110,16 @@ class GameHandler {
 
                 // Noun first time in the round
                 if (!(word in room.roundWordPool)) {
-                    room.roundWordPool[word] = [player.ID];
+                    room.roundWordPool[word] = {};
+                    room.roundWordPool[word].players = [player.ID];
+                    room.roundWordPool[word].definition = definitions;
                     player.addPoints(20); // Extra points for first occurence
                     reply.result = 2;
 
 
                 } else {
                     // Noun already used
-                    room.roundWordPool[word].push(player.ID);
+                    room.roundWordPool[word].players.push(player.ID);
                     reply.result = 1; // A noun, but not first
                 }
             }
