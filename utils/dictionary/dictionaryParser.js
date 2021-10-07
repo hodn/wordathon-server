@@ -1,38 +1,32 @@
-const axios = require("axios").default;
-require('dotenv').config();
-
 // Looks up the word in the dictionary
 // Returns definitions if the word is a noun (or other requirement)
-module.exports.getDefinitions = async (word) => {
+module.exports.getDefinitions = (word) => {
 
-  try {
-    let options = {
-      method: 'GET',
-      url: 'https://wordsapiv1.p.rapidapi.com/words/' + word,
-      headers: {
-        'x-rapidapi-key': process.env.WORD_API_KEY,
-        'x-rapidapi-host': process.env.WORD_API_HOST,
+  const CsvReadableStream = require('csv-reader');
+  const Fs = require('fs');
+  const AutoDetectDecoderStream = require('autodetect-decoder-stream');
+
+  let dictionary = Fs.createReadStream('./utils/dictionary/dictionary.csv')
+	  .pipe(new AutoDetectDecoderStream({ defaultEncoding: '1255' })); // If failed to guess encoding, default to 1255
+
+  const definitions = []
+  let hit = false;
+
+  let result = new Promise(function(resolve, reject) {
+    dictionary
+    .pipe(new CsvReadableStream())
+    .on('data', function (row) {
+      if(row[0] === word) {
+        definitions.push(row[1]);
+        hit = true;
       }
-    };
+    })
+    .on('end', function () {
+        resolve(hit === true ? {word, definitions} : null);
+    })
+    .on('error', reject);
+});
 
-    const response = await axios.request(options);
-    const definitions = [];
-
-    // Find the definition for nouns
-    response.data["results"].forEach(result => {
-      if (result["partOfSpeech"] === "noun") {
-        definitions.push(result.definition);
-      }
-    });
-    
-    return definitions;
-
-  } catch (err) {
-    console.error(err);
-    return null;
-  }
+  return result;
+  
 }
-
-
-
-

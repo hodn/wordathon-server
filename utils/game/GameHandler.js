@@ -99,20 +99,20 @@ class GameHandler {
         }
 
         try {
-            const definitions = await DictionaryParser.getDefinitions(word);
+            const result = await DictionaryParser.getDefinitions(word);
             const player = this.players[playerID];
             const room = this.rooms[player.roomID];
-
+            
             // Word is actually a noun
-            if (definitions) {
+            if (result !== null) {
                 player.addPoints(20); // For the noun
-                reply.definitions = definitions;
+                reply.definitions = result.definitions;
 
                 // Noun first time in the round
                 if (!(word in room.roundWordPool)) {
                     room.roundWordPool[word] = {};
                     room.roundWordPool[word].players = [player.ID];
-                    room.roundWordPool[word].definition = definitions;
+                    room.roundWordPool[word].definition = result.definitions;
                     player.addPoints(20); // Extra points for first occurence
                     reply.result = 2;
 
