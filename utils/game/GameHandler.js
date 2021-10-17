@@ -1,6 +1,6 @@
 const Player = require("./Player");
 const Room = require("./Room");
-const DictionaryParser = require("../dictionary/DictionaryParser");
+const DictionaryParser = require("../dictionary/dictionaryParser");
 
 class GameHandler {
     constructor() {
