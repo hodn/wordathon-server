@@ -3,11 +3,10 @@ const app = express();
 const httpServer = require("http").createServer(app);
 const io = require("socket.io")(httpServer, {
   cors: {
-    origin: "http://localhost:3000",
     methods: ["GET", "POST"]
   }
 });
-const port = 5000;
+const port = process.env.PORT || 5000;
 const GameHandler = require("./utils/game/GameHandler");
 const gh = new GameHandler();
 
