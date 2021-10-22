@@ -6,7 +6,7 @@ module.exports.getDefinitions = (word) => {
   const Fs = require('fs');
   const AutoDetectDecoderStream = require('autodetect-decoder-stream');
 
-  let dictionary = Fs.createReadStream('./utils/dictionary/dictionary.csv')
+  let dictionary = Fs.createReadStream('./utils/dictionary/wordnet_dictionary.csv')
 	  .pipe(new AutoDetectDecoderStream({ defaultEncoding: '1255' })); // If failed to guess encoding, default to 1255
 
   const definitions = []
