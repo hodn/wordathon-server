@@ -8,7 +8,9 @@ const io = require("socket.io")(httpServer, {
 });
 const port = process.env.PORT || 5000;
 const GameHandler = require("./utils/game/GameHandler");
-const gh = new GameHandler();
+const dictionaryParser = require("./utils/dictionary/dictionaryParser");
+const dictionary = dictionaryParser.loadDictionary();
+const gh = new GameHandler(dictionary);
 
 httpServer.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)

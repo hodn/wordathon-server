@@ -1,11 +1,12 @@
 const Player = require("./Player");
 const Room = require("./Room");
-const DictionaryParser = require("../dictionary/dictionaryParser");
+const dictionaryParser = require("../dictionary/dictionaryParser");
 
 class GameHandler {
-    constructor() {
+    constructor(dictionary) {
         this.rooms = {};
         this.players = {};
+        this.dictionary = dictionary;
     }
 
     registerPlayer(playerID, playerName) {
@@ -99,7 +100,7 @@ class GameHandler {
         }
 
         try {
-            const result = await DictionaryParser.getDefinitions(word);
+            const result = await dictionaryParser.getDefinitions(this.dictionary, word);
             const player = this.players[playerID];
             const room = this.rooms[player.roomID];
             

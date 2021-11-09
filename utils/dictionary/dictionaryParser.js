@@ -1,32 +1,50 @@
 // Looks up the word in the dictionary
 // Returns definitions if the word is a noun (or other requirement)
-module.exports.getDefinitions = (word) => {
+const loadDictionary = async () => {
 
-  const CsvReadableStream = require('csv-reader');
   const Fs = require('fs');
   const AutoDetectDecoderStream = require('autodetect-decoder-stream');
+  const CsvReadableStream = require('csv-reader');
 
-  let dictionary = Fs.createReadStream('./utils/dictionary/wordnet_dictionary.csv')
-	  .pipe(new AutoDetectDecoderStream({ defaultEncoding: '1255' })); // If failed to guess encoding, default to 1255
+  let file = Fs.createReadStream('./utils/dictionary/wordnet_dictionary.csv')
+    .pipe(new AutoDetectDecoderStream({ defaultEncoding: '1255' })); // If failed to guess encoding, default to 1255
 
-  const definitions = []
-  let hit = false;
+  const rows = [];
 
-  let result = new Promise(function(resolve, reject) {
-    dictionary
-    .pipe(new CsvReadableStream())
-    .on('data', function (row) {
-      if(row[0] === word) {
-        definitions.push(row[1]);
-        hit = true;
+  let dictionary = new Promise(function (resolve, reject) {
+    file
+      .pipe(new CsvReadableStream())
+      .on('data', function (row) {
+        rows.push(row);
+      })
+      .on('end', function () {
+        resolve(rows);
+      })
+      .on('error', reject);
+  });
+
+  return dictionary;
+}
+
+const getDefinitions = async (dictionary, word) => {
+
+  let dic = await dictionary;
+
+  const result = new Promise( (resolve) => {
+
+    for(let i = 0; i < dic.length; i++) {
+      if (dic[i][0] === word) {
+        definitions = [dic[i][1]];
+        resolve({word, definitions}) ;
       }
-    })
-    .on('end', function () {
-        resolve(hit === true ? {word, definitions} : null);
-    })
-    .on('error', reject);
-});
+    }
+      resolve(null);
+  })
 
   return result;
-  
 }
+
+module.exports = {
+  loadDictionary,
+  getDefinitions
+};
