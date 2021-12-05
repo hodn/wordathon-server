@@ -10,7 +10,7 @@ class Room {
             numberOfLetters: 12,
             roundDuration: 5,
         };
-        this.delayBetweenRounds = 10;
+        this.delayBetweenRounds = 20;
         this.round = 0;
         this.inRound = false;
         this.wordPool = [];
@@ -26,6 +26,10 @@ class Room {
         this.inRound = true;
         this.roundWordPool = {};
         this.generateLetters();
+    }
+
+    restartGame() {
+        this.round = 0;
     }
 
     endRound() {
