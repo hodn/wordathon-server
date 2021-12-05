@@ -52,13 +52,16 @@ class GameHandler {
     }
 
     getRoomState(playerID) {
-        const roomID = this.players[playerID].roomID;
-        return this.rooms[roomID];
+        const gameStartingPlayer = this.players[playerID];
+        
+        return gameStartingPlayer ? this.rooms[gameStartingPlayer.roomID] : null;
     }
 
-    startRound(playerID, updateRoom) {
+    startRound(playerID, updateRoom) {        
         const room = this.getRoomState(playerID);
 
+        if (!room) return;
+        
         if (room.ownerID === playerID) {
 
             room.startRound();
