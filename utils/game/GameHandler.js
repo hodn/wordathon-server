@@ -124,8 +124,13 @@ class GameHandler {
 
                 } else {
                     // Noun already used
+
+                    if (player.ID in roundWordPool[word].players) return; // same player entering a word more times
+                    
                     room.roundWordPool[word].players.push(player.ID);
                     reply.result = 1; // A noun, but not first
+
+                    
                 }
             }
 
