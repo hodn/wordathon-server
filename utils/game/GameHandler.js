@@ -62,7 +62,7 @@ class GameHandler {
 
         if (!room) return;
         
-        if (room.ownerID === playerID) {
+        if (room.ownerID === playerID || isRestart) {
 
             if (isRestart) room.restartGame();
             room.startRound();

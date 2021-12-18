@@ -30,6 +30,11 @@ class Room {
 
     restartGame() {
         this.round = 0;
+        this.wordPool = [];
+
+        for (const playerID in this.players) {
+            this.players[playerID].points = 0;
+        }
     }
 
     endRound() {
