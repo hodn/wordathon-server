@@ -57,11 +57,11 @@ class GameHandler {
         return gameStartingPlayer ? this.rooms[gameStartingPlayer.roomID] : null;
     }
 
-    startRound(playerID, updateRoom, isRestart) {        
+    startRound(playerID, updateRoom, isRestart) {
         const room = this.getRoomState(playerID);
 
         if (!room) return;
-        
+
         if (room.ownerID === playerID || isRestart) {
 
             if (isRestart) room.restartGame();
@@ -82,7 +82,7 @@ class GameHandler {
         // empty room - all players left
         if (Object.keys(room.players).length === 0) {
             delete this.rooms[room.ID]
-            return; 
+            return;
         }
 
         // if rounds left, start again in set seconds
@@ -92,12 +92,12 @@ class GameHandler {
                 this.startRound(room.ownerID, updateRoom);
             }, room.roundNextStart - Date.now()) // pause between rounds
 
-        } 
+        }
     }
 
     async evaluateWordEntry(playerID, word, sendEvaluation, updateRoom) {
 
-        const reply = {
+        let reply = {
             word,
             definitions: null,
             result: 0,
@@ -107,30 +107,32 @@ class GameHandler {
             const result = await dictionaryParser.getDefinitions(this.dictionary, word);
             const player = this.players[playerID];
             const room = this.rooms[player.roomID];
-            
+
             // Word is actually a noun
             if (result !== null) {
-                player.addPoints(20); // For the noun
+
                 reply.definitions = result.definitions;
 
-                // Noun first time in the round
+                // First word occurence in the round
                 if (!(word in room.roundWordPool)) {
                     room.roundWordPool[word] = {};
                     room.roundWordPool[word].players = [player.ID];
                     room.roundWordPool[word].definition = result.definitions;
                     player.addPoints(20); // Extra points for first occurence
+                    player.addPoints(20 + 5 * word.length); // For the noun and its length
                     reply.result = 2;
-
-
                 } else {
                     // Noun already used
+                    console.log(room.roundWordPool);
+                    // the player already entered the word
+                    if (room.roundWordPool[word].players.includes(player.ID)) {
+                        reply.result = 0;
+                    } else {
+                        player.addPoints(20 + 10 * word.length); // For the noun and its length
+                        room.roundWordPool[word].players.push(player.ID);
+                        reply.result = 1;
+                    }
 
-                    if (player.ID in roundWordPool[word].players) return; // same player entering a word more times
-                    
-                    room.roundWordPool[word].players.push(player.ID);
-                    reply.result = 1; // A noun, but not first
-
-                    
                 }
             }
 
