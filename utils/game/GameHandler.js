@@ -123,7 +123,6 @@ class GameHandler {
                     reply.result = 2;
                 } else {
                     // Noun already used
-                    console.log(room.roundWordPool);
                     // the player already entered the word
                     if (room.roundWordPool[word].players.includes(player.ID)) {
                         reply.result = 0;
