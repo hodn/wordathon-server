@@ -18,6 +18,7 @@ class GameHandler {
         return playerID in this.players;
     }
 
+    //TODO Think of the way to persist the socket
     removePlayer(playerID) {
         const designatedRoom = this.getRoomState(playerID);
 
@@ -57,21 +58,30 @@ class GameHandler {
         return gameStartingPlayer ? this.rooms[gameStartingPlayer.roomID] : null;
     }
 
-    startRound(playerID, updateRoom, isRestart) {
+    startGame(playerID, updateRoom, isRestart) {
         const room = this.getRoomState(playerID);
 
         if (!room) return;
 
-        if (room.ownerID === playerID || isRestart) {
+        if (isRestart) room.restartGame();
+        room.startRound();
+        updateRoom(room);
 
-            if (isRestart) room.restartGame();
-            room.startRound();
-            updateRoom(room);
+        setTimeout(() => {
+            this.endRound(room, updateRoom);
+        }, room.roundEndTime - Date.now())
 
-            setTimeout(() => {
-                this.endRound(room, updateRoom);
-            }, room.roundEndTime - Date.now())
-        }
+    }
+
+    continueRound(room, updateRoom) {
+        if (!room) return;
+
+        room.startRound();
+        updateRoom(room);
+
+        setTimeout(() => {
+            this.endRound(room, updateRoom);
+        }, room.roundEndTime - Date.now())
     }
 
     endRound(room, updateRoom) {
@@ -89,7 +99,7 @@ class GameHandler {
         if (room.settings.numberOfRounds > room.round) {
 
             setTimeout(() => {
-                this.startRound(room.ownerID, updateRoom);
+                this.continueRound(room, updateRoom);
             }, room.roundNextStart - Date.now()) // pause between rounds
 
         }

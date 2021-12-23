@@ -58,13 +58,13 @@ io.on('connection', (socket) => {
   socket.on("startGame", (settings) => {
     const updateRoom = (room) => io.to(room.ID).emit("updateRoom", room);
     gh.editRoomSettings(playerID, settings);
-    gh.startRound(playerID, updateRoom, false);
+    gh.startGame(playerID, updateRoom, false);
   })
   
   // Restart the game after it finished
   socket.on("restartGame", () => {
     const updateRoom = (room) => io.to(room.ID).emit("updateRoom", room);
-    gh.startRound(playerID, updateRoom, true);
+    gh.startGame(playerID, updateRoom, true);
   })
 
   socket.on("evaluateWordEntry", (word) => {
