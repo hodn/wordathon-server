@@ -129,7 +129,7 @@ class GameHandler {
                     room.roundWordPool[word].players = [player.ID];
                     room.roundWordPool[word].definition = result.definitions;
                     player.addPoints(20); // Extra points for first occurence
-                    player.addPoints(20 + 5 * word.length); // For the noun and its length
+                    player.addPoints(20 + 10 * word.length); // For the noun and its length
                     reply.result = 2;
                 } else {
                     // Noun already used
