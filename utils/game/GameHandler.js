@@ -129,7 +129,7 @@ class GameHandler {
                     room.roundWordPool[word].players = [player.ID];
                     room.roundWordPool[word].definition = result.definitions;
                     player.addPoints(20); // Extra points for first occurence
-                    player.addPoints(20 + 10 * word.length); // For the noun and its length
+                    player.addPoints(20 + 40 * word.length); // For the noun and its length
                     reply.result = 2;
                 } else {
                     // Noun already used
@@ -137,7 +137,7 @@ class GameHandler {
                     if (room.roundWordPool[word].players.includes(player.ID)) {
                         reply.result = 0;
                     } else {
-                        player.addPoints(20 + 10 * word.length); // For the noun and its length
+                        player.addPoints(20 + 40 * word.length); // For the noun and its length
                         room.roundWordPool[word].players.push(player.ID);
                         reply.result = 1;
                     }
