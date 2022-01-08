@@ -128,7 +128,7 @@ class GameHandler {
                     room.roundWordPool[word] = {};
                     room.roundWordPool[word].players = [player.ID];
                     room.roundWordPool[word].definition = result.definitions;
-                    player.addPoints(100); // Extra points for first occurence
+                    player.addPoints(50); // Extra points for first occurence
                     player.addPoints(20 * word.length); // For the noun and its length
 
                     if (word.length > 4) player.addPoints(300);
